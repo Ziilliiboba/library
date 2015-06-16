@@ -2,8 +2,11 @@ window.App = {};
 
 window.onload = function() {
   App.bookModel = new App.BookModel();
+  App.bookModel2 = new App.BookModel();   //to test
   App.bookView = new App.BookView( {model: App.bookModel} );
   App.formView = new App.FormView( {model: App.bookModel} );
+  App.libraryCollection = new App.LibraryCollection( [App.bookModel, App.bookModel2] );   //to test
+  App.libraryView = new App.LibraryView( {collection: App.libraryCollection} );
 }
 
 App.BookModel = Backbone.Model.extend({
@@ -45,6 +48,7 @@ App.BookView = Backbone.View.extend({
 
   render: function() {
     this.$el.html ( this.takeInLine() );
+
     return this;
   }
 });
@@ -92,3 +96,28 @@ App.FormView = Backbone.View.extend({
 App.LibraryCollection = Backbone.Collection.extend({
   model: App.BookModel
 });
+
+App.LibraryView = Backbone.View.extend({
+  tagName: 'ul',
+
+  initialize: function() {
+    this.render();
+    $('body').append(this.$el);
+  },
+
+  render: function() {
+    console.log(this.collection);
+    this.collection.each( function(book) {
+      var bookView = new App.BookView({model: book});
+      console.log(bookView);
+      this.$el.append(bookView.render().el);
+    }, this );
+    return this;
+  }  
+});
+
+
+
+
+
+
