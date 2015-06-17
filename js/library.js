@@ -23,10 +23,6 @@ App.BookModel = Backbone.Model.extend({
     if ( ! attrs.title ) {
       return 'Attribute TITLE is not filled';
     }
-
-    if ( ! attrs.year ) {
-      return 'Attribute YEAR is not filled';
-    } 
   }
 });
 
@@ -57,7 +53,7 @@ App.FormView = Backbone.View.extend({
   events: {
     "keyup .autor": "setAutor",
     "keyup .title": "setTitle",
-    "keyup .year": "setPYear",
+    "keyup .year": "setYear",
     "click .add": "addModelInCollection"
   },
 
@@ -66,13 +62,10 @@ App.FormView = Backbone.View.extend({
 
     this.model.on( 'invalid', function(model, error, options){
       this.$el.find(options.name+'Error').text( options.validationError );
-      console.log( options );
     });
   },
 
   addModelInCollection: function() {
-    console.log(this.model);
-    console.log(this.collection);
     this.collection.add( this.model );
     this.model = new App.BookModel();
 
@@ -91,7 +84,7 @@ App.FormView = Backbone.View.extend({
 
   setYear: function() {
     this.clear('.yearError');
-    this.model.set( 'year', '' + this.$('.year').val(), {validate:true, name:'.year'});
+    this.model.set( 'year', this.$('.year').val(), {validate:true, name:'.year'});
   },
 
   clear: function(elem) {
@@ -108,21 +101,32 @@ App.LibraryCollection = Backbone.Collection.extend({
 });
 
 App.LibraryView = Backbone.View.extend({
-  tagName: 'ul',
+  el: '#library',
+
+  events: {
+    "click li": "remove"
+  },
 
   initialize: function() {
     this.collection.on( 'add', this.render, this );
     this.render();
-    $('body').append(this.$el);
+    this.render();
+  },
+
+  remove: function( event ) {
+    this.collection.remove( event.target.id );
+
+    this.render();
   },
 
   render: function() {
-    console.log(this.collection);
+    this.$el.empty();
+
     this.collection.each( function(book) {
-      var bookView = new App.BookView({model: book});
-      console.log(bookView);
+      var bookView = new App.BookView({model: book, id: book.cid});
       this.$el.append(bookView.render().el);
     }, this );
+
     return this;
   }  
 });
