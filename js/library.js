@@ -1,11 +1,8 @@
 window.App = {};
 
 window.onload = function() {
-  App.bookModel = new App.BookModel();
-  App.bookModel2 = new App.BookModel();   //to test
-  App.bookView = new App.BookView( {model: App.bookModel} );
-  App.formView = new App.FormView( {model: App.bookModel} );
-  App.libraryCollection = new App.LibraryCollection( [App.bookModel, App.bookModel2] );   //to test
+  App.libraryCollection = new App.LibraryCollection();
+  App.formView = new App.FormView( {collection: App.libraryCollection} );
   App.libraryView = new App.LibraryView( {collection: App.libraryCollection} );
 }
 
@@ -33,6 +30,7 @@ App.BookModel = Backbone.Model.extend({
   }
 });
 
+//using only to render model in <li>DATA</li>
 App.BookView = Backbone.View.extend({
   tagName: 'li',
 
@@ -59,14 +57,26 @@ App.FormView = Backbone.View.extend({
   events: {
     "keyup .autor": "setAutor",
     "keyup .title": "setTitle",
-    "keyup .year": "setPYear"
+    "keyup .year": "setPYear",
+    "click .add": "addModelInCollection"
   },
 
   initialize: function() {
+    this.model = new App.BookModel();
+
     this.model.on( 'invalid', function(model, error, options){
       this.$el.find(options.name+'Error').text( options.validationError );
       console.log( options );
     });
+  },
+
+  addModelInCollection: function() {
+    console.log(this.model);
+    console.log(this.collection);
+    this.collection.add( this.model );
+    this.model = new App.BookModel();
+
+    return false;
   },
 
   setAutor: function() {
@@ -101,6 +111,7 @@ App.LibraryView = Backbone.View.extend({
   tagName: 'ul',
 
   initialize: function() {
+    this.collection.on( 'add', this.render, this );
     this.render();
     $('body').append(this.$el);
   },
