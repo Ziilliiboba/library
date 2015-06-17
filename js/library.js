@@ -26,7 +26,7 @@ App.BookModel = Backbone.Model.extend({
   }
 });
 
-//using only to render model in <li>DATA</li>
+//using only to render model in <li id=model.cid>DATA</li>
 App.BookView = Backbone.View.extend({
   tagName: 'li',
 
@@ -35,8 +35,8 @@ App.BookView = Backbone.View.extend({
   },
 
   takeInLine: function() {
-    return this.model.get('autor') + '    ' +
-      this.model.get('title') + '   ' +
+    return this.model.get('autor') + ' --- ' +
+      this.model.get('title') + ' --- ' +
       this.model.get('year');
   },
 
@@ -49,6 +49,7 @@ App.BookView = Backbone.View.extend({
 
 App.FormView = Backbone.View.extend({
   el: '#inputForm',
+  ui: {},
 
   events: {
     "keyup .autor": "setAutor",
@@ -59,6 +60,9 @@ App.FormView = Backbone.View.extend({
 
   initialize: function() {
     this.model = new App.BookModel();
+    this.ui.autor = this.$('.autor');
+    this.ui.title = this.$('.title');
+    this.ui.year = this.$('.year');
 
     this.model.on( 'invalid', function(model, error, options){
       this.$el.find(options.name+'Error').text( options.validationError );
@@ -74,17 +78,17 @@ App.FormView = Backbone.View.extend({
 
   setAutor: function() {
     this.clear('.autorError');
-    this.model.set( 'autor', this.$('.autor').val(), {validate:true, name:'.autor'});
+    this.model.set( 'autor', this.ui.autor.val(), {validate:true, name:'.autor'});
   },
 
   setTitle: function() {
     this.clear('.titleError');
-    this.model.set( 'title', this.$('.title').val(), {validate:true, name:'.title'});
+    this.model.set( 'title', this.ui.title.val(), {validate:true, name:'.title'});
   },
 
   setYear: function() {
     this.clear('.yearError');
-    this.model.set( 'year', this.$('.year').val(), {validate:true, name:'.year'});
+    this.model.set( 'year', +this.ui.year.val(), {validate:true, name:'.year'});
   },
 
   clear: function(elem) {
@@ -109,14 +113,13 @@ App.LibraryView = Backbone.View.extend({
 
   initialize: function() {
     this.collection.on( 'add', this.render, this );
+    this.collection.on( 'remove', this.render, this );
     this.render();
     this.render();
   },
 
   remove: function( event ) {
     this.collection.remove( event.target.id );
-
-    this.render();
   },
 
   render: function() {
