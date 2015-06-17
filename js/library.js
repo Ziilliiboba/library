@@ -2,8 +2,8 @@ window.App = {};
 
 window.onload = function() {
   App.libraryCollection = new App.LibraryCollection();
-  App.formView = new App.FormView( {collection: App.libraryCollection} );
-  App.libraryView = new App.LibraryView( {collection: App.libraryCollection} );
+    new App.FormView( {collection: App.libraryCollection} );
+    new App.LibraryView( {collection: App.libraryCollection} );
 }
 
 App.BookModel = Backbone.Model.extend({
@@ -22,8 +22,6 @@ App.BookModel = Backbone.Model.extend({
   },
 
   validate: function( attrs ) {
-    console.log(attrs);
- 
     if ( this.isntLetter(attrs.autor) ) {
       return 'Attribute AUTOR have numbers';
     }
@@ -38,7 +36,7 @@ App.BookModel = Backbone.Model.extend({
   }
 });
 
-//using only to render model in <li id=model.cid>DATA</li>
+//using to render model in <li id=model.cid>DATA</li>
 App.BookView = Backbone.View.extend({
   tagName: 'li',
 
@@ -79,7 +77,6 @@ App.FormView = Backbone.View.extend({
 
     //model validate listener
     this.model.on( 'invalid', function(model, error, options){
-      console.log(options.name);
       $(options.name+'Error').text( options.validationError );
     });
   },
@@ -108,7 +105,7 @@ App.FormView = Backbone.View.extend({
 
   //clear ERROR
   clear: function(elem) {
-    this.$el.find(elem).text( '' );
+    this.$(elem).text( '' );
   },
 
   render: function() {
@@ -130,8 +127,6 @@ App.LibraryView = Backbone.View.extend({
   initialize: function() {
     this.collection.on( 'add', this.render, this );
     this.collection.on( 'remove', this.render, this );
-    this.render();
-    this.render();
   },
 
   remove: function( event ) {
