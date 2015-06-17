@@ -13,15 +13,27 @@ App.BookModel = Backbone.Model.extend({
     year: 2000
   },
 
+  isntLetter: function(text) {
+    return /[0-9]/.exec(text);
+  },
+
+  isntNumber: function(text) { 
+    return /[a-zа-яё]/i.exec(text);
+  },
+
   validate: function( attrs ) {
     console.log(attrs);
  
-    if ( ! attrs.autor ) {
-      return 'Attribute AUTOR is not filled';
+    if ( this.isntLetter(attrs.autor) ) {
+      return 'Attribute AUTOR have numbers';
     }
 
-    if ( ! attrs.title ) {
-      return 'Attribute TITLE is not filled';
+    if ( this.isntLetter(attrs.title) ) {
+      return 'Attribute TITLE have numbers';
+    }
+
+    if ( this.isntNumber(attrs.year) ) {
+      return 'Attribute YEAR have letters';
     }
   }
 });
@@ -49,7 +61,7 @@ App.BookView = Backbone.View.extend({
 
 App.FormView = Backbone.View.extend({
   el: '#inputForm',
-  ui: {},
+  ui: {}, //objcet for user variables
 
   events: {
     "keyup .autor": "setAutor",
@@ -60,12 +72,15 @@ App.FormView = Backbone.View.extend({
 
   initialize: function() {
     this.model = new App.BookModel();
+
     this.ui.autor = this.$('.autor');
     this.ui.title = this.$('.title');
     this.ui.year = this.$('.year');
 
+    //model validate listener
     this.model.on( 'invalid', function(model, error, options){
-      this.$el.find(options.name+'Error').text( options.validationError );
+      console.log(options.name);
+      $(options.name+'Error').text( options.validationError );
     });
   },
 
@@ -91,6 +106,7 @@ App.FormView = Backbone.View.extend({
     this.model.set( 'year', +this.ui.year.val(), {validate:true, name:'.year'});
   },
 
+  //clear ERROR
   clear: function(elem) {
     this.$el.find(elem).text( '' );
   },
