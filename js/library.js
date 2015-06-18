@@ -2,9 +2,56 @@ window.App = {};
 
 window.onload = function() {
   App.libraryCollection = new App.LibraryCollection();
-    new App.FormView( {collection: App.libraryCollection} );
-    new App.LibraryView( {collection: App.libraryCollection} );
+  new App.FormView( {collection: App.libraryCollection} );
+  new App.LibraryView( {collection: App.libraryCollection} );
+  new App.Router();    
 }
+
+App.Router = Backbone.Router.extend({
+    ui: {},    
+    routes: {
+        ''     : 'index',
+        'book/:cid': 'lookBook',
+
+        '*other' : 'default'
+    },
+
+    initialize: function() {
+      this.ui.bodyContent = $('body>*');
+      this.ui.bookForm = $('#inputForm');
+      this.ui.renderCollection = $('#renderCollection');
+      this.ui.currentBook = $('#currentBook');
+
+      Backbone.history.start();
+    },
+
+    index: function() {
+      this.clear();
+      this.ui.bookForm.show();
+      this.ui.renderCollection.show();
+    },
+
+    lookBook: function(cid) {
+      this.clear();
+      this.ui.currentBook.show();
+      var model = App.libraryCollection.get(cid);
+      console.log(model);
+      var bookView = new App.BookView({model: model, id: cid});
+      this.ui.currentBook.append(bookView.render().el);
+      
+    },
+
+    clear: function() {
+      console.log('clear function');
+      this.ui.bodyContent.hide();
+    },
+
+    default: function (other) {
+      console.log('default route: ' + other);
+      $('body>*').hide();
+    }
+});
+
 
 App.BookModel = Backbone.Model.extend({
   defaults: {
