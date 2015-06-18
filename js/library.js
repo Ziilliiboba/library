@@ -33,6 +33,7 @@ App.Router = Backbone.Router.extend({
 
     lookBook: function(cid) {
       this.clear();
+      this.ui.currentBook.empty();
       this.ui.currentBook.show();
       var model = App.libraryCollection.get(cid);
       console.log(model);
@@ -168,7 +169,8 @@ App.LibraryView = Backbone.View.extend({
   el: '#library',
 
   events: {
-    "click li": "remove"
+    "click li": "remove",
+    "contextmenu li": "openBook"
   },
 
   initialize: function() {
@@ -178,6 +180,12 @@ App.LibraryView = Backbone.View.extend({
 
   remove: function( event ) {
     this.collection.remove( event.target.id );
+  },
+
+  openBook: function( event ) {
+    document.location.replace(location.href + 'book/'+event.target.id);
+
+    return false;
   },
 
   render: function() {
