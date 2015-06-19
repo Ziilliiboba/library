@@ -206,7 +206,3 @@ App.LibraryView = Backbone.View.extend({
 });
 
 
-
-
-
-
