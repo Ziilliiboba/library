@@ -37,19 +37,19 @@ App.Router = Backbone.Router.extend({
       this.ui.currentBook.show();
       var model = App.libraryCollection.get(cid);
       console.log(model);
-      var bookView = new App.BookView({model: model, id: cid});
-      this.ui.currentBook.append(bookView.render().el);
+      var bookView = new App.BookView( { model: model, id: cid } );
+      this.ui.currentBook.append( bookView.render().el );
       
     },
 
     clear: function() {
-      console.log('clear function');
+      console.log( 'clear function' );
       this.ui.bodyContent.hide();
     },
 
-    default: function (other) {
-      console.log('default route: ' + other);
-      $('body>*').hide();
+    default: function ( other ) {
+      console.log( 'default route: ' + other );
+      $( 'body>*' ).hide();
     }
 });
 
@@ -61,11 +61,11 @@ App.BookModel = Backbone.Model.extend({
     year: 2000
   },
 
-  isntLetter: function(text) {
+  isntLetter: function( text ) {
     return /[0-9]/.exec(text);
   },
 
-  isntNumber: function(text) { 
+  isntNumber: function( text ) { 
     return /[a-zа-яё]/i.exec(text);
   },
 
@@ -94,13 +94,13 @@ App.BookView = Backbone.View.extend({
   },
 
   takeInLine: function() {
-    return this.model.get('autor') + ' --- ' +
-      this.model.get('title') + ' --- ' +
-      this.model.get('year');
+    return this.model.get( 'autor' ) + ' --- ' +
+      this.model.get( 'title' ) + ' --- ' +
+      this.model.get( 'year' );
   },
 
   render: function() {
-    this.$el.html ( this.takeInLine());
+    this.$el.html ( this.takeInLine() );
 
     return this;
   }
@@ -118,41 +118,43 @@ App.FormView = Backbone.View.extend({
   },
 
   initialize: function() {
-    this.model = new App.BookModel();
-
     this.ui.autor = this.$('.autor');
     this.ui.title = this.$('.title');
     this.ui.year = this.$('.year');
 
-    //model validate listener
-    this.model.on( 'invalid', function(model, error, options){
-      $(options.name+'Error').text( options.validationError );
-    });
+    this.createModel();
   },
 
   addModelInCollection: function() {
     this.collection.add( this.model );
-    this.model = new App.BookModel();
+    this.createModel();
 
     return false;
   },
 
+  createModel: function() {
+    this.model = new App.BookModel();
+    this.model.on( 'invalid', function( model, error, options ){
+      $(options.name+'Error').text( options.validationError );
+    });
+  },
+
   setAutor: function() {
     this.clear('.autorError');
-    this.model.set( 'autor', this.ui.autor.val(), {validate:true, name:'.autor'});
+    this.model.set( 'autor', this.ui.autor.val(), {validate:true, name:'.autor'} );
   },
 
   setTitle: function() {
     this.clear('.titleError');
-    this.model.set( 'title', this.ui.title.val(), {validate:true, name:'.title'});
+    this.model.set( 'title', this.ui.title.val(), {validate:true, name:'.title'} );
   },
 
   setYear: function() {
     this.clear('.yearError');
-    this.model.set( 'year', +this.ui.year.val(), {validate:true, name:'.year'});
+    this.model.set( 'year', +this.ui.year.val(), {validate:true, name:'.year'} );
   },
 
-  //clear ERROR
+  //clear ERROR message from the form
   clear: function(elem) {
     this.$(elem).text( '' );
   },
@@ -187,7 +189,7 @@ App.LibraryView = Backbone.View.extend({
   },
 
   openBook: function( event ) {
-    document.location.assign(location.href + '#book/' + event.target.id);
+    document.location.assign( location.href + '#book/' + event.target.id );
 
     return false;
   },
@@ -196,9 +198,9 @@ App.LibraryView = Backbone.View.extend({
     this.$el.empty();
 
     this.collection.each( function(book) {
-      var bookView = new App.BookView({model: book, id: book.cid});
-      this.$el.append(bookView.render().el);
-      this.$el.append("<a href='#' class='remove'> | Удалить |</a>");
+      var bookView = new App.BookView( { model: book, id: book.cid } );
+      this.$el.append( bookView.render().el );
+      this.$el.append( "<a href='#' class='remove'> | Удалить |</a>" );
     }, this );
 
     return this;
