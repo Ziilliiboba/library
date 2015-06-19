@@ -87,6 +87,7 @@ App.BookModel = Backbone.Model.extend({
 //using to render model in <li id=model.cid>DATA</li>
 App.BookView = Backbone.View.extend({
   tagName: 'li',
+  ui: {},
 
   initialize: function() {
     this.render();
@@ -99,7 +100,7 @@ App.BookView = Backbone.View.extend({
   },
 
   render: function() {
-    this.$el.html ( this.takeInLine() );
+    this.$el.html ( this.takeInLine());
 
     return this;
   }
@@ -169,8 +170,8 @@ App.LibraryView = Backbone.View.extend({
   el: '#library',
 
   events: {
-    "click li": "remove",
-    "contextmenu li": "openBook"
+    "click a": "remove",
+    "click li": "openBook"
   },
 
   initialize: function() {
@@ -179,11 +180,14 @@ App.LibraryView = Backbone.View.extend({
   },
 
   remove: function( event ) {
-    this.collection.remove( event.target.id );
+    console.log($(event.target).prev()[0].id );
+    this.collection.remove( $(event.target).prev()[0].id );
+
+    return false;
   },
 
   openBook: function( event ) {
-    document.location.replace(location.href + 'book/'+event.target.id);
+    document.location.assign(location.href + '#book/' + event.target.id);
 
     return false;
   },
@@ -194,6 +198,7 @@ App.LibraryView = Backbone.View.extend({
     this.collection.each( function(book) {
       var bookView = new App.BookView({model: book, id: book.cid});
       this.$el.append(bookView.render().el);
+      this.$el.append("<a href='#' class='remove'> | Удалить |</a>");
     }, this );
 
     return this;
