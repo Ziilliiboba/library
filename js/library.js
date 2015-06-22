@@ -36,10 +36,8 @@ App.Router = Backbone.Router.extend({
       this.ui.currentBook.empty();
       this.ui.currentBook.show();
       var model = App.libraryCollection.get(cid);
-      //console.log(model);
-      var bookView = new App.BookView( { model: model, id: cid } );
-      this.ui.currentBook.append( bookView.render().el );
-      
+      var bookView = new App.BookView( { model: model} );
+      this.ui.currentBook.append( bookView.render().el );      
     },
 
     clear: function() {
@@ -106,7 +104,6 @@ App.BookView = Backbone.View.extend({
   },
 
   openBook: function() {
-    console.log( this.model.cid )
     document.location.assign( location.href + '#book/' + this.model.cid );
   },
 
@@ -189,10 +186,6 @@ App.LibraryCollection = Backbone.Collection.extend({
 App.LibraryView = Backbone.View.extend({
   el: '#library',
 
-  events: {
-    //"click li": "openBook"
-  },
-
   initialize: function() {
     this.collection.on( 'add', this.render, this );
     this.collection.on( 'remove', this.render, this );
@@ -202,13 +195,6 @@ App.LibraryView = Backbone.View.extend({
   remove: function( model ) {
     //console.log( model );
     this.collection.remove( model );
-  },
-
-  openBook: function( event ) {
-    console.log( event )
-    document.location.assign( location.href + '#book/' + event.target.id );
-
-    return false;
   },
 
   render: function() {
