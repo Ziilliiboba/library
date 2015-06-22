@@ -36,7 +36,7 @@ App.Router = Backbone.Router.extend({
       this.ui.currentBook.empty();
       this.ui.currentBook.show();
       var model = App.libraryCollection.get(cid);
-      console.log(model);
+      //console.log(model);
       var bookView = new App.BookView( { model: model, id: cid } );
       this.ui.currentBook.append( bookView.render().el );
       
@@ -58,7 +58,8 @@ App.BookModel = Backbone.Model.extend({
   defaults: {
     autor: "Autor's name",
     title: "Book's title",
-    year: 2000
+    year: 2000,
+    remove: false
   },
 
   isntLetter: function( text ) {
@@ -84,19 +85,36 @@ App.BookModel = Backbone.Model.extend({
   }
 });
 
-//using to render model in <li id=model.cid>DATA</li>
 App.BookView = Backbone.View.extend({
   tagName: 'li',
   ui: {},
+
+  events: {
+    "click a": "remove",
+    "click": "openBook"
+  },
 
   initialize: function() {
     this.render();
   },
 
+  remove: function( event ) {
+    this.model.set('remove', true);
+    event.stopPropagation();
+
+    return false;
+  },
+
+  openBook: function() {
+    console.log( this.model.cid )
+    document.location.assign( location.href + '#book/' + this.model.cid );
+  },
+
   takeInLine: function() {
     return this.model.get( 'autor' ) + ' --- ' +
       this.model.get( 'title' ) + ' --- ' +
-      this.model.get( 'year' );
+      this.model.get( 'year' ) + 
+      "<a href='#' class='remove'> | Удалить |</a>";
   },
 
   render: function() {
@@ -172,23 +190,22 @@ App.LibraryView = Backbone.View.extend({
   el: '#library',
 
   events: {
-    "click a": "remove",
-    "click li": "openBook"
+    //"click li": "openBook"
   },
 
   initialize: function() {
     this.collection.on( 'add', this.render, this );
     this.collection.on( 'remove', this.render, this );
+    this.collection.on( 'change:remove', this.remove, this );
   },
 
-  remove: function( event ) {
-    console.log($(event.target).prev()[0].id );
-    this.collection.remove( $(event.target).prev()[0].id );
-
-    return false;
+  remove: function( model ) {
+    //console.log( model );
+    this.collection.remove( model );
   },
 
   openBook: function( event ) {
+    console.log( event )
     document.location.assign( location.href + '#book/' + event.target.id );
 
     return false;
@@ -198,9 +215,8 @@ App.LibraryView = Backbone.View.extend({
     this.$el.empty();
 
     this.collection.each( function(book) {
-      var bookView = new App.BookView( { model: book, id: book.cid } );
+      var bookView = new App.BookView( { model: book } );
       this.$el.append( bookView.render().el );
-      this.$el.append( "<a href='#' class='remove'> | Удалить |</a>" );
     }, this );
 
     return this;
