@@ -1,4 +1,4 @@
-define(['backbone'], function(Backbone) {
+define(['epoxy'], function() {
 
   var App = {};
 
@@ -47,12 +47,33 @@ define(['backbone'], function(Backbone) {
   });
 
 
-  App.BookModel = Backbone.Model.extend({
+  App.BookModel = Backbone.Epoxy.Model.extend({
     defaults: {
       autor: "Autor's name",
       title: "Book's title",
       year: 2000,
+      
       remove: false
+    },
+
+    computeds: {
+      textYear: {
+        deps: ["year"],
+        get: function( year ){
+          return year + ' г.';
+        },
+        set: function( value ){
+          return {year: parseInt(value.replace(" г.", ""))}
+        }
+      },
+
+      //may be this metod can be realisated like path of the metod BookView.render
+      inLineDescription: {
+        deps: ["autor", "title", "textYear"],
+        get: function( autor, title, textYear ) {
+          return autor + ' --- ' + title + ' --- ' + textYear;
+        }
+      }
     },
 
     isntLetter: function( text ) {
@@ -103,9 +124,7 @@ define(['backbone'], function(Backbone) {
     },
 
     takeInLine: function() {
-      return this.model.get( 'autor' ) + ' --- ' +
-        this.model.get( 'title' ) + ' --- ' +
-        this.model.get( 'year' ) + 
+      return this.model.get( 'inLineDescription' ) +
         "<a href='#' class='remove'> | Удалить |</a>";
     },
 
