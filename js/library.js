@@ -1,4 +1,4 @@
-define(['epoxy'], function() {
+define(['epoxy', 'knockout'], function() {
 
   var App = {};
 
@@ -99,12 +99,11 @@ define(['epoxy'], function() {
     }
   });
 
-  App.BookView = Backbone.View.extend({
+  App.BookView = Backbone.Epoxy.View.extend({
     tagName: 'li',
     ui: {},
-
     events: {
-      "click a": "remove",
+      "click .remove": "remove",
       "click": "openBook"
     },
 
@@ -135,14 +134,24 @@ define(['epoxy'], function() {
     }
   });
 
-  App.FormView = Backbone.View.extend({
+  App.FormView = Backbone.Epoxy.View.extend({
     el: '#inputForm',
     ui: {}, //objcet for user variables
+    model: new App.BookModel(),
+
+    bindings: {
+      "input.autor": "value:autor,events:['keyup']",
+      "input.title": "value:title,events:['keyup']",
+      "input.year": "value:year,events:['keyup']",
+
+      "p.autorError": "text:'Поле АВТОР не заполнено',toggle:not(autor)",
+      "p.titleError": "text:'Поле НАЗВАНИЕ КНИГИ не заполнено',toggle:not(title)",
+      "p.yearError": "text:'Поле ГОД ИЗДАНИЯ не заполнено',toggle:not(year)"
+
+
+    },
 
     events: {
-      "keyup .autor": "setAutor",
-      "keyup .title": "setTitle",
-      "keyup .year": "setYear",
       "click .add": "addModelInCollection"
     },
 
@@ -151,23 +160,17 @@ define(['epoxy'], function() {
       this.ui.title = this.$('.title');
       this.ui.year = this.$('.year');
 
-      this.createModel();
-    },
-
-    addModelInCollection: function() {
-      this.collection.add( this.model );
-      this.createModel();
-
-      return false;
-    },
-
-    createModel: function() {
-      this.model = new App.BookModel();
       this.model.on( 'invalid', function( model, error, options ){
         $(options.name+'Error').text( options.validationError );
       });
     },
 
+    addModelInCollection: function() {
+      this.collection.add( this.model.clone() );
+
+      return false;
+    },
+/*
     setAutor: function() {
       this.clear('.autorError');
       this.model.set( 'autor', this.ui.autor.val(), {validate:true, name:'.autor'} );
@@ -187,7 +190,7 @@ define(['epoxy'], function() {
     clear: function(elem) {
       this.$(elem).text( '' );
     },
-
+*/
     render: function() {
       return this;
     }
