@@ -15,7 +15,6 @@ require.config({
   }
 });
 
-window.onload = //may be don't need
 require(['library'], function(App) {
   App.libraryCollection = new App.LibraryCollection();
   new App.FormView( {collection: App.libraryCollection} );
