@@ -100,8 +100,25 @@ define(['epoxy', 'knockout'], function() {
   });
 
   App.BookView = Backbone.Epoxy.View.extend({
-    tagName: 'li',
+    el: "<li><p></p><a href='#' class='remove'> | Удалить |</a></li>",
     ui: {},
+
+    bindings: {
+      'p': "text:inLineDescription"
+    },
+    bindingHandlers: {
+      removeBook: function() {
+        this.model.set('remove', true);
+        event.stopPropagation();
+
+        return false;
+      },
+
+      openBook: function() {
+        document.location.assign( location.href + '#book/' + this.model.cid );
+      }
+    },
+
     events: {
       "click .remove": "remove",
       "click": "openBook"
@@ -122,13 +139,7 @@ define(['epoxy', 'knockout'], function() {
       document.location.assign( location.href + '#book/' + this.model.cid );
     },
 
-    takeInLine: function() {
-      return this.model.get( 'inLineDescription' ) +
-        "<a href='#' class='remove'> | Удалить |</a>";
-    },
-
     render: function() {
-      this.$el.html ( this.takeInLine() );
 
       return this;
     }
@@ -136,7 +147,6 @@ define(['epoxy', 'knockout'], function() {
 
   App.FormView = Backbone.Epoxy.View.extend({
     el: '#inputForm',
-    ui: {}, //objcet for user variables
     model: new App.BookModel(),
 
     bindings: {
@@ -168,13 +178,6 @@ define(['epoxy', 'knockout'], function() {
     },
 
     initialize: function() {
-      this.ui.autor = this.$('.autor');
-      this.ui.title = this.$('.title');
-      this.ui.year = this.$('.year');
-
-      this.model.on( 'invalid', function( model, error, options ){
-        $(options.name+'Error').text( options.validationError );
-      });
     },
 
     addModelInCollection: function() {
@@ -182,27 +185,7 @@ define(['epoxy', 'knockout'], function() {
 
       return false;
     },
-/*
-    setAutor: function() {
-      this.clear('.autorError');
-      this.model.set( 'autor', this.ui.autor.val(), {validate:true, name:'.autor'} );
-    },
 
-    setTitle: function() {
-      this.clear('.titleError');
-      this.model.set( 'title', this.ui.title.val(), {validate:true, name:'.title'} );
-    },
-
-    setYear: function() {
-      this.clear('.yearError');
-      this.model.set( 'year', +this.ui.year.val(), {validate:true, name:'.year'} );
-    },
-
-    //clear ERROR message from the form
-    clear: function(elem) {
-      this.$(elem).text( '' );
-    },
-*/
     render: function() {
       return this;
     }
