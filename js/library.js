@@ -144,11 +144,23 @@ define(['epoxy', 'knockout'], function() {
       "input.title": "value:title,events:['keyup']",
       "input.year": "value:year,events:['keyup']",
 
-      "p.autorError": "text:'Поле АВТОР не заполнено',toggle:not(autor)",
-      "p.titleError": "text:'Поле НАЗВАНИЕ КНИГИ не заполнено',toggle:not(title)",
-      "p.yearError": "text:'Поле ГОД ИЗДАНИЯ не заполнено',toggle:not(year)"
+      "p.autorNon": "text:'Поле АВТОР не заполнено',toggle:not(autor)",
+      "p.titleNon": "text:'Поле НАЗВАНИЕ КНИГИ не заполнено',toggle:not(title)",
+      "p.yearNon": "text:'Поле ГОД ИЗДАНИЯ не заполнено',toggle:not(year)",
 
+      "p.autorError": "text:'Поле АВТОР содержит цифры',toggle:isntLetter(autor)",
+      "p.titleError": "text:'Поле НАЗВАНИЕ КНИГИ содержит цифры',toggle:isntLetter(title)",
+      "p.yearError": "text:'Поле ГОД ИЗДАНИЯ содержит буквы',toggle:isntNumber(year)"
+    },
 
+    bindingFilters: {
+      isntLetter: function( text ) {
+        return /[0-9]/.exec(text);
+      },
+
+      isntNumber: function( text ) { 
+        return /[a-zа-яё]/i.exec(text);
+      }
     },
 
     events: {
